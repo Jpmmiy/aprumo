@@ -51,9 +51,6 @@ function Passo({
   )
 }
 
-const MODELO_ENV = `VITE_SUPABASE_URL=cole_aqui_a_project_url
-VITE_SUPABASE_ANON_KEY=cole_aqui_a_chave_anon`
-
 export function Configurar() {
   return (
     <div className="min-h-dvh bg-fundo px-4 py-10 md:py-16">
@@ -118,26 +115,27 @@ export function Configurar() {
               </p>
             </Passo>
 
-            <Passo n={4} titulo="Copie as duas chaves">
+            <Passo n={4} titulo="Guarde as duas chaves no projeto">
               <p>
-                Abra <b>Project Settings → API</b>. Você precisa de dois valores: a <b>Project URL</b>{' '}
-                e a chave <b>anon public</b>.
+                Abra <b>Project Settings → API</b>. Lá tem dois valores que o app precisa: a{' '}
+                <b>Project URL</b> e a chave <b>anon public</b>.
               </p>
               <p>
-                Na pasta do projeto, crie um arquivo chamado <code className="num text-xs">.env.local</code>{' '}
-                com estas duas linhas:
+                Você não precisa criar arquivo nenhum na mão. No terminal, dentro da pasta do
+                projeto, rode:
               </p>
-              <div className="rounded-campo border border-borda bg-superficie-2 p-3">
-                <pre className="num overflow-x-auto text-[0.75rem] leading-relaxed text-tinta-2">
-                  {MODELO_ENV}
-                </pre>
-                <div className="mt-2">
-                  <BotaoCopiar texto={MODELO_ENV} rotulo="Copiar modelo" />
-                </div>
+              <div className="flex flex-wrap items-center gap-2 rounded-campo border border-borda bg-superficie-2 p-3">
+                <code className="num text-[0.8125rem] text-tinta">npm run configurar</code>
+                <BotaoCopiar texto="npm run configurar" rotulo="Copiar comando" />
               </div>
+              <p>
+                Ele pergunta um valor de cada vez: você cola, aperta Enter, e ele escreve o arquivo
+                no lugar certo.
+              </p>
               <p className="text-tinta-3">
                 A chave <b>anon</b> pode ficar visível no navegador — ela só consegue ler e escrever
-                as linhas da sua própria conta. Nunca use a chave <b>service_role</b> aqui.
+                as linhas da sua própria conta. A chave <b>service_role</b> nunca pode ser usada
+                aqui, e o comando acima recusa ela se você colar por engano.
               </p>
             </Passo>
 

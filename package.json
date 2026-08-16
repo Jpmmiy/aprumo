@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "configurar": "node scripts/configurar.mjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",

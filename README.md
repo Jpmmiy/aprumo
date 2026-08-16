@@ -74,23 +74,27 @@ Salve.
 Isso deixa você criar a conta e entrar na hora, sem depender de e-mail chegar. Como a
 conta é só sua, não muda nada de segurança.
 
-### 2.4 Copiar as duas chaves
+### 2.4 Guardar as duas chaves no projeto
 
-Abra **Project Settings → API** e copie:
+Abra **Project Settings → API** no Supabase. Lá tem dois valores que o app precisa:
+a **Project URL** e a chave **anon public**.
 
-- **Project URL**
-- a chave **anon public**
+Não precisa criar arquivo nenhum na mão. Na pasta do projeto, rode:
 
-Na pasta do projeto, crie um arquivo chamado `.env.local`:
-
+```bash
+npm run configurar
 ```
-VITE_SUPABASE_URL=https://seuprojeto.supabase.co
-VITE_SUPABASE_ANON_KEY=sua_chave_anon_aqui
-```
+
+Ele pergunta um valor de cada vez — você cola, aperta Enter, e ele escreve o arquivo
+`.env.local` no lugar certo. Se você colar a chave errada, ele avisa e pergunta de novo.
 
 > A chave **anon** pode ficar visível no navegador — cada tabela tem RLS ligada, então
 > ela só consegue ler e escrever as linhas da sua própria conta. **Nunca** use a chave
-> `service_role` aqui: essa ignora as regras e dá acesso a tudo.
+> `service_role` aqui: essa ignora as regras e dá acesso a tudo. O comando acima recusa
+> a `service_role` se você colar por engano.
+
+O `.env.local` fica só no seu computador — o `.gitignore` impede que ele vá para o
+GitHub.
 
 ### 2.5 Reiniciar
 
