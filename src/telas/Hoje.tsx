@@ -112,24 +112,35 @@ export function Hoje() {
         </Cartao>
 
         <div className="flex flex-col gap-4">
-          <Cartao className="p-5">
-            <div className="flex flex-wrap items-center gap-2.5">
+          <Cartao className="p-4 sm:p-5">
+            <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center">
               <Botao
                 aparencia="solido"
                 tamanho="g"
                 onClick={() => setAbrirSessao(true)}
-                className="flex-1 sm:flex-none"
+                className="w-full whitespace-nowrap sm:w-auto"
               >
                 <Plus size={17} /> Registrar estudo
               </Botao>
-              <Link to="/estudar" className="flex-1 sm:flex-none">
-                <Botao aparencia={rodando ? 'latao' : 'contorno'} tamanho="g" className="w-full">
-                  <Timer size={17} /> {rodando ? 'Cronômetro rodando' : 'Abrir cronômetro'}
+              <div className="grid grid-cols-2 gap-2.5 sm:contents">
+                <Link to="/estudar" className="min-w-0">
+                  <Botao
+                    aparencia={rodando ? 'latao' : 'contorno'}
+                    tamanho="g"
+                    className="w-full whitespace-nowrap"
+                  >
+                    <Timer size={17} /> {rodando ? 'Rodando' : 'Cronômetro'}
+                  </Botao>
+                </Link>
+                <Botao
+                  aparencia="contorno"
+                  tamanho="g"
+                  onClick={() => setAbrirQuestao(true)}
+                  className="w-full whitespace-nowrap sm:w-auto"
+                >
+                  <ListChecks size={17} /> Questões
                 </Botao>
-              </Link>
-              <Botao aparencia="contorno" tamanho="g" onClick={() => setAbrirQuestao(true)}>
-                <ListChecks size={17} /> Questões
-              </Botao>
+              </div>
             </div>
           </Cartao>
 

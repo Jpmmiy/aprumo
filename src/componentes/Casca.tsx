@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useSyncExternalStore, type ReactNode } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   BarChart3,
@@ -25,26 +25,47 @@ const NAVEGACAO = [
 
 type Tema = 'sistema' | 'claro' | 'escuro'
 
+/**
+ * O botão de tema existe duas vezes na tela (barra lateral e topo do celular).
+ * Com estado local, um não sabia do outro e os dois passavam a mostrar ícones
+ * contraditórios — por isso o tema mora fora do React, num store minúsculo.
+ */
+const CHAVE_TEMA = 'aprumo:tema'
+const ouvintes = new Set<() => void>()
+
+function lerTema(): Tema {
+  const salvo = localStorage.getItem(CHAVE_TEMA)
+  return salvo === 'claro' || salvo === 'escuro' ? salvo : 'sistema'
+}
+
+function definirTema(tema: Tema) {
+  if (tema === 'sistema') {
+    delete document.documentElement.dataset.tema
+    localStorage.removeItem(CHAVE_TEMA)
+  } else {
+    document.documentElement.dataset.tema = tema
+    localStorage.setItem(CHAVE_TEMA, tema)
+  }
+  ouvintes.forEach((avisar) => avisar())
+}
+
+function inscrever(avisar: () => void) {
+  ouvintes.add(avisar)
+  const media = window.matchMedia('(prefers-color-scheme: dark)')
+  media.addEventListener('change', avisar)
+  return () => {
+    ouvintes.delete(avisar)
+    media.removeEventListener('change', avisar)
+  }
+}
+
 function useTema() {
-  const [tema, setTema] = useState<Tema>(() => {
-    const salvo = localStorage.getItem('aprumo:tema')
-    return salvo === 'claro' || salvo === 'escuro' ? salvo : 'sistema'
-  })
-
-  useEffect(() => {
-    if (tema === 'sistema') {
-      delete document.documentElement.dataset.tema
-      localStorage.removeItem('aprumo:tema')
-    } else {
-      document.documentElement.dataset.tema = tema
-      localStorage.setItem('aprumo:tema', tema)
-    }
-  }, [tema])
-
+  const tema = useSyncExternalStore(inscrever, lerTema, () => 'sistema' as Tema)
   const escuroAtivo =
-    tema === 'escuro' || (tema === 'sistema' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    tema === 'escuro' ||
+    (tema === 'sistema' && typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
-  return { tema, setTema, escuroAtivo }
+  return { tema, setTema: definirTema, escuroAtivo }
 }
 
 function BotaoTema() {

@@ -29,10 +29,12 @@ function DialogoAula({
   aberto,
   aoFechar,
   inicial,
+  aoApagar,
 }: {
   aberto: boolean
   aoFechar: () => void
   inicial?: Partial<Aula>
+  aoApagar?: () => void
 }) {
   const { dados, salvar } = useDados()
   const ativas = dados.materias.filter((m) => !m.arquivada)
@@ -93,6 +95,11 @@ function DialogoAula({
       descricao="A aula se repete toda semana neste dia e horário."
       rodape={
         <>
+          {inicial?.id && aoApagar && (
+            <Botao aparencia="perigo" onClick={aoApagar} className="mr-auto">
+              <Trash2 size={14} /> Apagar
+            </Botao>
+          )}
           <Botao aparencia="fantasma" onClick={aoFechar}>
             Cancelar
           </Botao>
@@ -347,15 +354,12 @@ function Grade() {
         )}
       </Cartao>
 
-      {editando?.id && (
-        <div className="flex justify-end">
-          <Botao aparencia="perigo" tamanho="p" onClick={() => setApagando(editando as Aula)}>
-            <Trash2 size={14} /> Apagar esta aula
-          </Botao>
-        </div>
-      )}
-
-      <DialogoAula aberto={editando !== null} aoFechar={() => setEditando(null)} inicial={editando ?? undefined} />
+      <DialogoAula
+        aberto={editando !== null}
+        aoFechar={() => setEditando(null)}
+        inicial={editando ?? undefined}
+        aoApagar={() => setApagando(editando as Aula)}
+      />
       <ConfirmarExclusao
         aberto={apagando !== null}
         aoFechar={() => setApagando(null)}

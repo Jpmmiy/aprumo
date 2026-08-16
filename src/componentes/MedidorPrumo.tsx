@@ -10,21 +10,27 @@ import { duracao } from '@/lib/formato'
  */
 
 const ANCORA_X = 140
-const ANCORA_Y = 22
-const R_INTERNO = 146
-const R_EXTERNO = 157
+const ANCORA_Y = 20
+const R_INTERNO = 150
+const R_EXTERNO = 161
 const ABERTURA = 28
 
 const rad = (g: number) => (g * Math.PI) / 180
+
+/**
+ * O eixo Y do SVG cresce para baixo, então `rotate` positivo joga um peso
+ * pendurado para a ESQUERDA. É por isso que estar atrás da meta é ângulo
+ * positivo aqui: esquerda é o lado do atraso, como dizem os rótulos.
+ */
 const ponto = (angulo: number, raio: number) => ({
-  x: ANCORA_X + raio * Math.sin(rad(angulo)),
+  x: ANCORA_X - raio * Math.sin(rad(angulo)),
   y: ANCORA_Y + raio * Math.cos(rad(angulo)),
 })
 
 function anguloDaRazao(razao: number): number {
-  if (!Number.isFinite(razao) || razao <= 0) return -ABERTURA
-  if (razao >= 1) return Math.min(20, 28 * (razao - 1))
-  return -ABERTURA * (1 - razao)
+  if (!Number.isFinite(razao) || razao <= 0) return ABERTURA
+  if (razao >= 1) return -Math.min(20, 28 * (razao - 1))
+  return ABERTURA * (1 - razao)
 }
 
 function leitura(feito: number, meta: number): { estado: string; cor: string } {
@@ -51,14 +57,15 @@ export function MedidorPrumo({ feito, meta }: { feito: number; meta: number }) {
   const faltam = Math.max(0, meta - feito)
 
   const ticks = Array.from({ length: 15 }, (_, i) => -ABERTURA + (i * (ABERTURA * 2)) / 14)
-  const inicioArco = ponto(-ABERTURA, R_INTERNO)
-  const fimArco = ponto(ABERTURA, R_INTERNO)
-  const bandaA = ponto(-4, R_INTERNO)
-  const bandaB = ponto(4, R_INTERNO)
+  // O arco é desenhado da esquerda para a direita, então parte do ângulo positivo.
+  const inicioArco = ponto(ABERTURA, R_INTERNO)
+  const fimArco = ponto(-ABERTURA, R_INTERNO)
+  const bandaA = ponto(4, R_INTERNO)
+  const bandaB = ponto(-4, R_INTERNO)
 
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox="0 0 280 178" className="w-full max-w-[280px]" role="img"
+      <svg viewBox="0 0 280 202" className="w-full max-w-[280px]" role="img"
         aria-label={`${duracao(feito)} de ${duracao(meta)} — ${estado}`}>
         <defs>
           <linearGradient id="latao-peso" x1="0" y1="0" x2="1" y2="1">
@@ -113,16 +120,16 @@ export function MedidorPrumo({ feito, meta }: { feito: number; meta: number }) {
             x1={ANCORA_X}
             y1={ANCORA_Y}
             x2={ANCORA_X}
-            y2={116}
+            y2={106}
             stroke="var(--tinta-3)"
             strokeWidth="1.25"
           />
           <path
-            d={`M ${ANCORA_X} 112 L ${ANCORA_X + 13} 130 L ${ANCORA_X} 166 L ${ANCORA_X - 13} 130 Z`}
+            d={`M ${ANCORA_X} 102 L ${ANCORA_X + 12.5} 120 L ${ANCORA_X} 150 L ${ANCORA_X - 12.5} 120 Z`}
             fill="url(#latao-peso)"
           />
           <path
-            d={`M ${ANCORA_X} 112 L ${ANCORA_X + 13} 130 L ${ANCORA_X} 166 L ${ANCORA_X - 13} 130 Z`}
+            d={`M ${ANCORA_X} 102 L ${ANCORA_X + 12.5} 120 L ${ANCORA_X} 150 L ${ANCORA_X - 12.5} 120 Z`}
             fill="none"
             stroke="var(--latao-forte)"
             strokeWidth="0.75"
@@ -131,9 +138,9 @@ export function MedidorPrumo({ feito, meta }: { feito: number; meta: number }) {
           />
           {/* brilho de metal, do lado esquerdo do peso */}
           <path
-            d={`M ${ANCORA_X - 4.5} 122 L ${ANCORA_X - 1} 128 L ${ANCORA_X - 3} 152 Z`}
+            d={`M ${ANCORA_X - 4} 112 L ${ANCORA_X - 1} 118 L ${ANCORA_X - 2.5} 140 Z`}
             fill="var(--superficie)"
-            opacity="0.28"
+            opacity="0.3"
           />
         </g>
 
@@ -144,15 +151,20 @@ export function MedidorPrumo({ feito, meta }: { feito: number; meta: number }) {
           strokeWidth="2.5"
           strokeLinecap="round"
         />
+
+        {/* rótulos ancorados nas pontas da escala, não nas bordas do cartão */}
+        <text x={inicioArco.x} y="194" textAnchor="middle" fontSize="11" fontWeight="500" fill="var(--tinta-3)">
+          atrás
+        </text>
+        <text x={ANCORA_X} y="194" textAnchor="middle" fontSize="11" fontWeight="600" fill="var(--acento)">
+          meta
+        </text>
+        <text x={fimArco.x} y="194" textAnchor="middle" fontSize="11" fontWeight="500" fill="var(--tinta-3)">
+          adiantado
+        </text>
       </svg>
 
-      <div className="-mt-1 flex w-full max-w-[280px] items-baseline justify-between px-1">
-        <span className="text-[0.6875rem] font-medium text-tinta-3">atrás</span>
-        <span className="text-[0.6875rem] font-medium text-tinta-3">meta</span>
-        <span className="text-[0.6875rem] font-medium text-tinta-3">adiantado</span>
-      </div>
-
-      <div className="mt-4 text-center">
+      <div className="mt-2 text-center">
         <p className="num text-[2.125rem] leading-none font-medium text-tinta">{duracao(feito)}</p>
         <p className="mt-1.5 text-[0.8125rem] text-tinta-3">
           de {duracao(meta)} hoje

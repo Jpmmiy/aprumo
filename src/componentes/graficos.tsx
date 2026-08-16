@@ -92,8 +92,12 @@ export function ColunasDiarias({
   const l = Math.max(0, largura - margem.esquerda - margem.direita)
   const a = altura - margem.topo - margem.baixo
 
+  // A grade só marca horas inteiras: "1h30" no eixo é ruído, e a dízima de
+  // dividir o teto em partes iguais imprimia coisas como "1,333h".
   const maximo = Math.max(meta ?? 0, ...pontos.map((p) => p.total), 60)
-  const teto = Math.ceil(maximo / 60) * 60
+  const horasTeto = Math.max(1, Math.ceil(maximo / 60))
+  const passoHora = Math.max(1, Math.ceil(horasTeto / 4))
+  const teto = Math.ceil(horasTeto / passoHora) * passoHora * 60
   const escalaY = (v: number) => a - (v / teto) * a
 
   const passo = pontos.length ? l / pontos.length : 0
@@ -101,7 +105,7 @@ export function ColunasDiarias({
 
   // Rótulos do eixo x rareiam conforme a tela encolhe, para não colidirem.
   const saltoX = Math.max(1, Math.ceil((pontos.length * 34) / Math.max(l, 1)))
-  const linhasGrade = Array.from({ length: 4 }, (_, i) => (teto / 3) * i)
+  const linhasGrade = Array.from({ length: teto / 60 / passoHora + 1 }, (_, i) => i * passoHora * 60)
 
   return (
     <div ref={ref} className="relative w-full">
@@ -318,6 +322,19 @@ export function LinhasEvolucao({ series, altura = 230 }: { series: SerieLinha[];
 
   const grade = [0, 25, 50, 75, 100]
 
+  // Quando as três bancas terminam com aproveitamento parecido, os nomes na
+  // ponta se sobrepõem. Aqui eles são afastados na vertical, mantendo a ordem.
+  const rotulosFinais = new Map<string, number>()
+  const finais = series
+    .filter((s) => s.pontos.length)
+    .map((s) => ({ id: s.id, y: escalaY(s.pontos[s.pontos.length - 1].valor) }))
+    .sort((a, b) => a.y - b.y)
+  const ESPACO = 13
+  finais.forEach((f, i) => {
+    if (i > 0 && f.y - finais[i - 1].y < ESPACO) f.y = finais[i - 1].y + ESPACO
+    rotulosFinais.set(f.id, f.y)
+  })
+
   return (
     <div ref={ref} className="relative w-full">
       {largura > 0 && (
@@ -343,12 +360,15 @@ export function LinhasEvolucao({ series, altura = 230 }: { series: SerieLinha[];
                   <path d={d} fill="none" stroke={s.cor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   {/* rótulo direto na ponta: a identidade não depende só da cor */}
                   <text
-                    x={escalaX(ultimo.data) + 8}
-                    y={escalaY(ultimo.valor)}
+                    x={escalaX(ultimo.data) + 9}
+                    y={rotulosFinais.get(s.id) ?? escalaY(ultimo.valor)}
                     dominantBaseline="middle"
                     fontSize="10.5"
                     fontWeight="600"
                     fill={s.cor}
+                    stroke="var(--superficie)"
+                    strokeWidth="3"
+                    paintOrder="stroke"
                   >
                     {s.nome}
                   </text>
@@ -529,6 +549,19 @@ export function MapaEsforco({
   const mediaY = pontos.length ? pontos.reduce((t, p) => t + p.y, 0) / pontos.length : 50
   const mediaX = pontos.length ? pontos.reduce((t, p) => t + p.x, 0) / pontos.length : maxX / 2
 
+  // Duas matérias com tempo e acerto parecidos empilhavam os nomes um sobre o
+  // outro. Quando isso acontece, o segundo rótulo desce para baixo do ponto.
+  const colocados: { x: number; y: number }[] = []
+  const posicaoRotulo = pontos.map((p) => {
+    const px = escalaX(p.x)
+    const py = escalaY(p.y)
+    const acima = { x: px, y: py - 12 }
+    const colide = colocados.some((c) => Math.abs(c.x - acima.x) < 62 && Math.abs(c.y - acima.y) < 13)
+    const escolhido = colide ? { x: px, y: py + 19 } : acima
+    colocados.push(escolhido)
+    return escolhido
+  })
+
   return (
     <div ref={ref} className="relative w-full">
       {largura > 0 && (
@@ -564,12 +597,15 @@ export function MapaEsforco({
                   strokeWidth="2"
                 />
                 <text
-                  x={escalaX(p.x)}
-                  y={escalaY(p.y) - 12}
+                  x={posicaoRotulo[i].x}
+                  y={posicaoRotulo[i].y}
                   textAnchor="middle"
                   fontSize="10"
                   fontWeight="600"
                   fill="var(--tinta-2)"
+                  stroke="var(--superficie)"
+                  strokeWidth="3"
+                  paintOrder="stroke"
                 >
                   {p.nome.length > 12 ? p.nome.slice(0, 11) + '…' : p.nome}
                 </text>
