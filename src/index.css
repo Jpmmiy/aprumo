@@ -1,0 +1,371 @@
+@import 'tailwindcss';
+
+/* =========================================================================
+   APRUMO — sistema visual
+
+   Tese: um prumo é um peso pendurado num fio. Ele não opina, não motiva e não
+   dá parabéns: ele só mostra se a coisa está no eixo ou torta. O app inteiro é
+   isso — um instrumento de leitura, não um jogo de recompensas.
+
+   Contra o que se posiciona: contra o app de produtividade que celebra cada
+   toque com confete, gradiente roxo e "você é incrível!". Aqui a superfície é
+   calada (verde musgo, o verde que fica embaixo da mata, não o verde neon de
+   notificação), o único calor é o latão do peso do prumo, e o número aparece
+   sem enfeite. A recompensa é ver a linha reta.
+
+   Regra que organiza tudo: musgo é a superfície, latão é o instrumento.
+   Latão nunca pinta um botão comum — só marca o agora, a meta e o prumo.
+   ========================================================================= */
+
+:root {
+  /* Rampa musgo — do chão da mata até a folha nova */
+  --musgo-950: #0e120c;
+  --musgo-900: #10150e;
+  --musgo-850: #1a2117;
+  --musgo-800: #212a1d;
+  --musgo-750: #283324;
+  --musgo-700: #33402c;
+  --musgo-600: #435237;
+  --musgo-500: #566845;
+  --musgo-400: #6f8459;
+  --musgo-300: #8fa379;
+  --musgo-200: #b2c29e;
+  --musgo-150: #c6d3b3;
+  --musgo-100: #d2dcc4;
+  --musgo-075: #e2e9d6;
+  --musgo-050: #edf0e6;
+  --musgo-025: #f7f9f3;
+
+  /* ---- Modo claro (padrão) ---- */
+  --fundo: var(--musgo-050);
+  --superficie: var(--musgo-025);
+  --superficie-2: var(--musgo-075);
+  --superficie-funda: #dfe7d2;
+  --borda: #d5dec6;
+  --borda-forte: #bcc9a8;
+
+  --tinta: #161c12;
+  --tinta-2: #4a5744;
+  --tinta-3: #6f7d67;
+
+  --acento: #3e5c33;
+  --acento-forte: #2e4626;
+  --acento-tinta: #f7f9f3;
+  --acento-fraco: #dde7d0;
+
+  --latao: #8a6a1c;
+  --latao-forte: #6f5514;
+  --latao-fraco: #f0e6cd;
+
+  --broto: #43903f;
+  --ferrugem: #a3402c;
+  --ferrugem-fraco: #f4dcd6;
+
+  /* Séries de gráfico — validadas para daltonismo sobre a superfície clara */
+  --serie-ativo: #43903f;
+  --serie-passivo: #2f6fb5;
+  --banca-pucrs: #2f6fb5;
+  --banca-ufrgs: #9c7320;
+  --banca-enem: #b4436e;
+
+  /* Rampa sequencial (calendário de constância), claro→escuro */
+  --calor-0: #e6ebdd;
+  --calor-1: #c3d3ac;
+  --calor-2: #96b177;
+  --calor-3: #618a49;
+  --calor-4: #3a5f2b;
+
+  --sombra-1: 0 1px 2px rgb(22 28 18 / 0.05);
+  --sombra-2: 0 2px 4px rgb(22 28 18 / 0.05), 0 8px 20px -8px rgb(22 28 18 / 0.09);
+  --sombra-3: 0 12px 32px -12px rgb(22 28 18 / 0.22);
+
+  color-scheme: light;
+}
+
+/* ---- Modo escuro ---- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+    --fundo: var(--musgo-900);
+    --superficie: var(--musgo-850);
+    --superficie-2: var(--musgo-800);
+    --superficie-funda: var(--musgo-950);
+    --borda: #2b3625;
+    --borda-forte: #3e4c35;
+
+    --tinta: #e9efe1;
+    --tinta-2: #a8b69d;
+    --tinta-3: #7b8a71;
+
+    --acento: #7cb06a;
+    --acento-forte: #94c483;
+    --acento-tinta: #10150e;
+    --acento-fraco: #253020;
+
+    --latao: #c79a34;
+    --latao-forte: #dbae45;
+    --latao-fraco: #2c2718;
+
+    --broto: #5ea751;
+    --ferrugem: #d97a63;
+    --ferrugem-fraco: #33201b;
+
+    --serie-ativo: #5ea751;
+    --serie-passivo: #4a86c4;
+    --banca-pucrs: #5b8fcc;
+    --banca-ufrgs: #ae8523;
+    --banca-enem: #cc5f86;
+
+    --calor-0: #1e2719;
+    --calor-1: #2f4527;
+    --calor-2: #456a37;
+    --calor-3: #5f9049;
+    --calor-4: #85bd6c;
+
+    --sombra-1: 0 1px 2px rgb(0 0 0 / 0.4);
+    --sombra-2: 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 20px -8px rgb(0 0 0 / 0.5);
+    --sombra-3: 0 12px 32px -12px rgb(0 0 0 / 0.7);
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-tema='escuro'] {
+  --fundo: var(--musgo-900);
+  --superficie: var(--musgo-850);
+  --superficie-2: var(--musgo-800);
+  --superficie-funda: var(--musgo-950);
+  --borda: #2b3625;
+  --borda-forte: #3e4c35;
+
+  --tinta: #e9efe1;
+  --tinta-2: #a8b69d;
+  --tinta-3: #7b8a71;
+
+  --acento: #7cb06a;
+  --acento-forte: #94c483;
+  --acento-tinta: #10150e;
+  --acento-fraco: #253020;
+
+  --latao: #c79a34;
+  --latao-forte: #dbae45;
+  --latao-fraco: #2c2718;
+
+  --broto: #5ea751;
+  --ferrugem: #d97a63;
+  --ferrugem-fraco: #33201b;
+
+  --serie-ativo: #5ea751;
+  --serie-passivo: #4a86c4;
+  --banca-pucrs: #5b8fcc;
+  --banca-ufrgs: #ae8523;
+  --banca-enem: #cc5f86;
+
+  --calor-0: #1e2719;
+  --calor-1: #2f4527;
+  --calor-2: #456a37;
+  --calor-3: #5f9049;
+  --calor-4: #85bd6c;
+
+  --sombra-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --sombra-2: 0 2px 4px rgb(0 0 0 / 0.3), 0 8px 20px -8px rgb(0 0 0 / 0.5);
+  --sombra-3: 0 12px 32px -12px rgb(0 0 0 / 0.7);
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-fundo: var(--fundo);
+  --color-superficie: var(--superficie);
+  --color-superficie-2: var(--superficie-2);
+  --color-superficie-funda: var(--superficie-funda);
+  --color-borda: var(--borda);
+  --color-borda-forte: var(--borda-forte);
+
+  --color-tinta: var(--tinta);
+  --color-tinta-2: var(--tinta-2);
+  --color-tinta-3: var(--tinta-3);
+
+  --color-acento: var(--acento);
+  --color-acento-forte: var(--acento-forte);
+  --color-acento-tinta: var(--acento-tinta);
+  --color-acento-fraco: var(--acento-fraco);
+
+  --color-latao: var(--latao);
+  --color-latao-forte: var(--latao-forte);
+  --color-latao-fraco: var(--latao-fraco);
+
+  --color-broto: var(--broto);
+  --color-ferrugem: var(--ferrugem);
+  --color-ferrugem-fraco: var(--ferrugem-fraco);
+
+  --color-serie-ativo: var(--serie-ativo);
+  --color-serie-passivo: var(--serie-passivo);
+
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-sans: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --radius-cartao: 14px;
+  --radius-campo: 10px;
+
+  --shadow-baixo: var(--sombra-1);
+  --shadow-medio: var(--sombra-2);
+  --shadow-alto: var(--sombra-3);
+}
+
+@layer base {
+  * {
+    border-color: var(--borda);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--fundo);
+    color: var(--tinta);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: none;
+  }
+
+  /* O display é Fraunces com o eixo óptico alto: nos títulos grandes ele fica
+     com serifa fina e desenho mais desenhado; é a única voz "escrita" do app. */
+  .display {
+    font-family: var(--font-display);
+    font-variation-settings: 'opsz' 128;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  /* Todo número que se compara com outro número usa mono com figuras tabulares,
+     senão a coluna dança a cada segundo do cronômetro. */
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum';
+  }
+
+  .rotulo {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tinta-3);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: var(--acento-fraco);
+    color: var(--tinta);
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Some com as setinhas do number: a digitação é sempre por teclado aqui. */
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
+  /* Barras de rolagem discretas, na cor da superfície */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--borda-forte) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--borda-forte);
+    border-radius: 99px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer utilities {
+  .area-segura-baixo {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .area-segura-topo {
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* --- Movimento: só onde ele significa alguma coisa --- */
+@keyframes prumo-assentar {
+  0% {
+    transform: rotate(var(--angulo-inicial, 0deg));
+  }
+  35% {
+    transform: rotate(calc(var(--angulo) * 1.18));
+  }
+  62% {
+    transform: rotate(calc(var(--angulo) * 0.9));
+  }
+  84% {
+    transform: rotate(calc(var(--angulo) * 1.03));
+  }
+  100% {
+    transform: rotate(var(--angulo));
+  }
+}
+
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pulso-brando {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.animar-surgir {
+  animation: surgir 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
