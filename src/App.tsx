@@ -1,11 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
-import { configurado } from '@/lib/supabase'
-import { ProvedorAuth, useAuth } from '@/dados/auth'
 import { ProvedorDados } from '@/dados/loja'
 import { ProvedorCronometro } from '@/dados/cronometro'
-import { Casca, TelaCarregando } from '@/componentes/Casca'
-import { Configurar } from '@/telas/Configurar'
-import { Entrar } from '@/telas/Entrar'
+import { Casca } from '@/componentes/Casca'
 import { Hoje } from '@/telas/Hoje'
 import { Estudar } from '@/telas/Estudar'
 import { Desempenho } from '@/telas/Desempenho'
@@ -13,12 +9,11 @@ import { Rotina } from '@/telas/Rotina'
 import { Anotacoes } from '@/telas/Anotacoes'
 import { Ajustes } from '@/telas/Ajustes'
 
-function Roteador() {
-  const { sessao, carregando } = useAuth()
-
-  if (carregando) return <TelaCarregando mensagem="Abrindo o Aprumo" />
-  if (!sessao) return <Entrar />
-
+/**
+ * Sem login e sem tela de configuração: os dados ficam no próprio aparelho,
+ * então o app abre já usável. Ver LOVABLE.md para ligar sincronização na nuvem.
+ */
+export function App() {
   return (
     <ProvedorDados>
       <ProvedorCronometro>
@@ -35,16 +30,5 @@ function Roteador() {
         </Casca>
       </ProvedorCronometro>
     </ProvedorDados>
-  )
-}
-
-export function App() {
-  // Sem as chaves do Supabase não há o que autenticar: o app abre no guia.
-  if (!configurado) return <Configurar />
-
-  return (
-    <ProvedorAuth>
-      <Roteador />
-    </ProvedorAuth>
   )
 }

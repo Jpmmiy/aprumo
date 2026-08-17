@@ -71,8 +71,8 @@ export function Hoje() {
         <h1 className="display text-lg text-tinta">Não consegui carregar seus dados</h1>
         <p className="mt-2 text-[0.875rem] leading-relaxed text-tinta-2">{erro}</p>
         <p className="mt-3 text-[0.8125rem] text-tinta-3">
-          Se a mensagem fala em tabela que não existe, falta rodar o <code className="num">supabase/schema.sql</code>{' '}
-          no SQL Editor do Supabase.
+          Se o navegador estiver em janela anônima ou com armazenamento bloqueado, o app não consegue
+          guardar nada. Abra numa janela normal.
         </p>
       </Cartao>
     )

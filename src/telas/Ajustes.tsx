@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Download, GripVertical, LogOut, Pencil, Plus, Trash2 } from 'lucide-react'
-import { useAuth } from '@/dados/auth'
+import { useEffect, useRef, useState } from 'react'
+import { Download, GripVertical, Pencil, Plus, Trash2, Upload } from 'lucide-react'
 import { useDados } from '@/dados/loja'
 import {
   Alternador,
@@ -174,8 +173,9 @@ function DialogoProva({
 // ==================================================================== tela ==
 
 export function Ajustes() {
-  const { sair, sessao } = useAuth()
-  const { dados, salvar, remover, salvarPerfil, salvando } = useDados()
+  const { dados, salvar, remover, salvarPerfil, salvando, importar } = useDados()
+  const entradaArquivo = useRef<HTMLInputElement>(null)
+  const [restauro, setRestauro] = useState<{ ok: boolean; texto: string } | null>(null)
 
   const [nome, setNome] = useState(dados.perfil.nome)
   const [metaDia, setMetaDia] = useState(String(dados.perfil.meta_min_dia))
@@ -217,6 +217,22 @@ export function Ajustes() {
     a.download = `aprumo-backup-${hoje()}.json`
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  async function restaurarBackup(arquivo: File) {
+    setRestauro(null)
+    try {
+      const bruto = JSON.parse(await arquivo.text())
+      const listas = ['sessoes', 'questoes', 'materias', 'tarefas', 'anotacoes']
+      if (!listas.some((l) => Array.isArray(bruto?.[l]))) {
+        setRestauro({ ok: false, texto: 'Esse arquivo não parece um backup do Aprumo.' })
+        return
+      }
+      importar(bruto)
+      setRestauro({ ok: true, texto: 'Backup restaurado. Seus dados foram substituídos pelos do arquivo.' })
+    } catch {
+      setRestauro({ ok: false, texto: 'Não consegui ler esse arquivo. Ele precisa ser o .json que o botão acima gera.' })
+    }
   }
 
   const usoMateria = (id: string) =>
@@ -316,7 +332,9 @@ export function Ajustes() {
               <GripVertical size={14} className="shrink-0 text-tinta-3/50" />
               <span className="h-3 w-3 shrink-0 rounded-full" style={{ background: m.cor }} />
               <span className="min-w-0 flex-1 truncate text-[0.875rem] text-tinta">{m.nome}</span>
-              <span className="num shrink-0 text-xs text-tinta-3">{numero(usoMateria(m.id))} registros</span>
+              <span className="num shrink-0 text-xs text-tinta-3">
+                {numero(usoMateria(m.id))} {usoMateria(m.id) === 1 ? 'registro' : 'registros'}
+              </span>
               <Alternador
                 ligado={!m.arquivada}
                 rotulo={m.arquivada ? `Reativar ${m.nome}` : `Arquivar ${m.nome}`}
@@ -393,15 +411,18 @@ export function Ajustes() {
         )}
       </Cartao>
 
-      {/* --------------------------------- conta --------------------------------- */}
+      {/* --------------------------------- dados --------------------------------- */}
       <Cartao>
-        <CabecalhoCartao titulo="Conta e dados" descricao={sessao?.user.email ?? undefined} />
+        <CabecalhoCartao
+          titulo="Seus dados"
+          descricao="Ficam guardados neste aparelho, neste navegador."
+        />
         <div className="space-y-3 px-5 pb-5">
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-borda bg-superficie-2 px-4 py-3">
             <div className="min-w-0">
               <p className="text-[0.875rem] font-medium text-tinta">Baixar uma cópia de tudo</p>
               <p className="text-[0.8125rem] text-tinta-3">
-                Um arquivo JSON com sessões, questões, redações, tarefas e anotações.
+                Um arquivo com sessões, questões, redações, tarefas e anotações.
               </p>
             </div>
             <Botao tamanho="p" onClick={baixarBackup}>
@@ -411,13 +432,43 @@ export function Ajustes() {
 
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-borda px-4 py-3">
             <div className="min-w-0">
-              <p className="text-[0.875rem] font-medium text-tinta">Sair desta conta</p>
-              <p className="text-[0.8125rem] text-tinta-3">Seus dados continuam salvos na nuvem.</p>
+              <p className="text-[0.875rem] font-medium text-tinta">Restaurar de um backup</p>
+              <p className="text-[0.8125rem] text-tinta-3">
+                É assim que você leva o que fez no computador para o celular, e o contrário.
+              </p>
             </div>
-            <Botao tamanho="p" aparencia="perigo" onClick={() => void sair()}>
-              <LogOut size={14} /> Sair
+            <input
+              ref={entradaArquivo}
+              type="file"
+              accept="application/json,.json"
+              className="hidden"
+              onChange={(e) => {
+                const arquivo = e.target.files?.[0]
+                if (arquivo) void restaurarBackup(arquivo)
+                e.target.value = ''
+              }}
+            />
+            <Botao tamanho="p" onClick={() => entradaArquivo.current?.click()}>
+              <Upload size={14} /> Escolher arquivo
             </Botao>
           </div>
+
+          {restauro && (
+            <p
+              className="rounded-[10px] px-4 py-3 text-[0.8125rem] leading-relaxed"
+              style={{
+                background: restauro.ok ? 'var(--acento-fraco)' : 'var(--ferrugem-fraco)',
+                color: restauro.ok ? 'var(--acento)' : 'var(--ferrugem)',
+              }}
+            >
+              {restauro.texto}
+            </p>
+          )}
+
+          <p className="px-1 text-xs leading-relaxed text-tinta-3">
+            Como tudo mora neste navegador, limpar os dados de navegação apaga seu histórico de
+            estudo. Baixe uma cópia de vez em quando.
+          </p>
         </div>
       </Cartao>
 
@@ -437,7 +488,7 @@ export function Ajustes() {
         aoConfirmar={() => materiaApagar && void remover('materias', materiaApagar.id)}
         oQue={
           materiaApagar
-            ? `A matéria "${materiaApagar.nome}" e os ${usoMateria(materiaApagar.id)} registros ligados a ela`
+            ? `A matéria "${materiaApagar.nome}" e ${usoMateria(materiaApagar.id) === 1 ? 'o registro ligado' : `os ${usoMateria(materiaApagar.id)} registros ligados`} a ela`
             : ''
         }
       />
