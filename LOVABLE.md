@@ -1,46 +1,37 @@
 # Aprumo no Lovable
 
-O app importa e **funciona na hora**, sem configurar nada: os dados ficam salvos
-no próprio navegador. Você já pode usar assim, e ligar a nuvem depois — ou nunca.
-
----
-
-## Importar
-
-1. **lovable.dev** → entrar com o GitHub
-2. Novo projeto → importar do GitHub → escolher `Jpmmiy/aprumo`
-3. Como o repositório é privado, autorize o app do Lovable a enxergar ele
-4. Aguarde o build. Não precisa mexer em variável de ambiente, nem em chave, nem
-   em banco de dados — não existe nenhuma.
+O projeto importa e **funciona na hora**, sem configurar nada. Depois, um único
+pedido no chat liga o Lovable Cloud e resolve a sincronização entre aparelhos.
 
 Stack: Vite + React 19 + TypeScript + Tailwind v4 + React Router. É a stack
-nativa do Lovable, então ele entende o projeto e consegue editar tudo.
+nativa do Lovable, então ele entende e consegue editar o projeto inteiro.
 
 ---
 
-## O que já funciona sem nuvem
+## 1. Importar
 
-Tudo. Cronômetro, registro de sessões, gráficos, questões, redação, grade do
-cursinho, tarefas, anotações e ajustes.
+1. **lovable.dev** → entrar com o GitHub
+2. Novo projeto → importar do GitHub → `Jpmmiy/aprumo`
+3. O repositório é privado: autorize o app do Lovable a enxergar ele
+4. Aguardar o build
 
-A única limitação: os dados vivem **naquele aparelho, naquele navegador**. O que
-você registrar no computador não aparece sozinho no celular.
+Não há variável de ambiente, chave nem banco para configurar. Não existe nenhum.
 
-Enquanto não ligar a nuvem, use **Ajustes → Seus dados**: *Baixar uma cópia* no
-computador e *Restaurar de um backup* no celular. Funciona, mas é manual.
+Ao abrir, o app pede **usuário e senha** (`jpmed` + a senha em
+`src/lib/acesso.ts`). É uma trava simples, conferida no próprio navegador — o
+passo 2 troca ela por login de verdade.
 
 ---
 
-## Ligar o Lovable Cloud (quando quiser sincronizar)
+## 2. Ligar o Lovable Cloud
 
-O Cloud só pode ser ligado de dentro do Lovable. Depois de importar o projeto,
-mande esta mensagem no chat dele:
+Cole esta mensagem no chat do Lovable:
 
 > Ative o Lovable Cloud neste projeto.
 >
-> Hoje todos os dados ficam em localStorage, e toda a leitura e escrita passa por
-> um único arquivo: `src/dados/loja.tsx`. Ele expõe um contexto React com esta
-> interface, que **as telas usam e não pode mudar**:
+> **Onde mexer.** Todo o armazenamento está isolado em `src/dados/loja.tsx`, que
+> hoje grava em localStorage. Ele expõe um contexto React com esta interface, que
+> as telas consomem e **não pode mudar de forma**:
 >
 > - `dados` — objeto com `perfil` e as listas `materias`, `sessoes`, `questoes`,
 >   `redacoes`, `aulas`, `tarefas`, `anotacoes`, `provas`
@@ -49,23 +40,42 @@ mande esta mensagem no chat dele:
 > - `salvarPerfil(mudancas)`
 > - `materiaPorId(id)`, `importar(json)`, `recarregar()`, `carregando`, `erro`
 >
-> Troque a implementação interna desse arquivo por Lovable Cloud, mantendo a
-> interface idêntica, e:
+> Troque a implementação interna por Lovable Cloud mantendo essa interface, e:
 >
-> 1. Crie uma tabela para cada lista, com os campos que estão em `src/lib/tipos.ts`,
->    mais uma coluna `user_id` ligada ao usuário.
+> 1. Crie uma tabela por lista, com os campos definidos em `src/lib/tipos.ts`,
+>    mais uma coluna `user_id` ligada ao usuário. Atenção: em `sessoes` o campo
+>    `materia_id` é **anulável** — sessão sem matéria é o bloco corrido do
+>    cursinho, e isso precisa continuar valendo.
 > 2. Ligue RLS em todas: cada conta só enxerga as próprias linhas.
 > 3. Ao apagar uma matéria, apague em cascata as sessões e questões dela, e
->    limpe a referência em aulas, tarefas e anotações.
-> 4. Adicione login por e-mail e senha, com uma tela de entrada em português.
+>    limpe a referência (deixando nula) em aulas, tarefas e anotações.
+> 4. Substitua a trava de `src/lib/acesso.ts` e a tela `src/telas/Entrada.tsx`
+>    por login de verdade, com e-mail e senha conferidos no servidor. Mantenha o
+>    visual da tela como está e o usuário `jpmed`. Apague `src/lib/acesso.ts`
+>    quando terminar — ele guarda a senha em texto puro e não pode sobreviver à
+>    migração.
 > 5. Na primeira entrada de uma conta nova, crie o perfil e semeie as nove
->    matérias que estão em `MATERIAS_INICIAIS`, em `src/lib/constantes.ts`.
-> 6. Ao entrar pela primeira vez num aparelho que já tinha dados locais, ofereça
->    enviar esses dados para a nuvem em vez de descartar.
+>    matérias de `MATERIAS_INICIAIS`, em `src/lib/constantes.ts`.
+> 6. Se o aparelho já tiver dados em localStorage na primeira entrada, **ofereça
+>    enviar esses dados para a nuvem** em vez de descartar.
 >
-> Não mexa em nenhuma tela, em nenhum gráfico e em nada dentro de `src/lib/`.
+> Não altere nada em `src/lib/` além do que está pedido acima, nem as telas, nem
+> os gráficos.
 
-O ponto 6 importa: sem ele você perde o que já tiver registrado localmente.
+O ponto 6 importa: sem ele você perde o que já tiver registrado no aparelho.
+O ponto 4 também: sem ele a senha continua legível no código do site.
+
+---
+
+## 3. Enquanto o Cloud não estiver ligado
+
+Os dados vivem **naquele aparelho, naquele navegador**. O que você registrar no
+computador não aparece sozinho no celular.
+
+Para levar de um para o outro, use **Ajustes → Seus dados**: *Baixar uma cópia*
+num aparelho e *Restaurar de um backup* no outro.
+
+Limpar os dados de navegação apaga o histórico. Baixe uma cópia de vez em quando.
 
 ---
 
@@ -74,13 +84,18 @@ O ponto 6 importa: sem ele você perde o que já tiver registrado localmente.
 ```
 src/
   lib/          regras puras — datas, formatação, métricas, tipos, constantes
-  dados/        estado da aplicação
+    acesso.ts     trava de entrada (sai quando o Cloud entrar)
+  dados/
     loja.tsx      ← todo o armazenamento mora aqui (o que o Cloud substitui)
     cronometro.tsx  cronômetro que sobrevive a recarregar a página
-  componentes/  interface reutilizável, gráficos em SVG próprio, a marca
+  componentes/  interface, gráficos em SVG próprio, a marca e o medidor do prumo
   telas/        uma por aba da navegação
 ```
 
-Regra que vale a pena manter: `src/lib/` não conhece React nem armazenamento, e
-`src/telas/` nunca fala com armazenamento direto — sempre via `useDados()`.
-É isso que faz a troca para o Cloud caber em um arquivo só.
+Duas regras que fazem a migração caber em um arquivo só, e que vale manter:
+`src/lib/` não conhece React nem armazenamento, e `src/telas/` nunca fala com
+armazenamento direto — sempre via `useDados()`.
+
+Os gráficos são SVG escrito à mão, sem biblioteca. As cores de série passaram
+por validação de contraste e daltonismo nos dois temas; se for mexer nelas,
+mantenha ativo e passivo distinguíveis em protanopia e deuteranopia.

@@ -20,8 +20,11 @@ npm install
 npm run dev
 ```
 
-Abra http://localhost:5173. **Não tem configuração, nem login, nem chave.**
-Os dados ficam salvos no navegador e as nove matérias já vêm cadastradas.
+Abra http://localhost:5173. **Não tem chave nem banco para configurar.** Os
+dados ficam salvos no navegador e as nove matérias já vêm cadastradas.
+
+O app pede usuário e senha ao abrir — a trava fica em `src/lib/acesso.ts`, é
+conferida no próprio navegador e sai de cena quando entrar login de verdade.
 
 Para publicar, veja [LOVABLE.md](LOVABLE.md).
 
