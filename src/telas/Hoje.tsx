@@ -105,7 +105,7 @@ export function Hoje() {
       </header>
 
       {/* ------------------------- prumo + ações do dia ------------------------- */}
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,340px)_1fr]">
+      <div className="grid items-start gap-5 lg:grid-cols-[320px_minmax(0,1fr)]">
         <Cartao className="flex flex-col items-center px-5 pt-6 pb-6">
           <p className="rotulo mb-1">O prumo de hoje</p>
           <MedidorPrumo feito={painel.minutos} meta={meta} />
@@ -144,7 +144,7 @@ export function Hoje() {
             </div>
           </Cartao>
 
-          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 xl:grid-cols-4">
             <Indicador
               rotulo="Estudo hoje"
               valor={duracao(painel.minutos)}
@@ -191,46 +191,47 @@ export function Hoje() {
               }
             />
           </div>
+
+              {/* o diagnóstico preenche a altura que o prumo ocupa ao lado */}
+          {painel.diagnosticos.length > 0 && (
+            <Cartao>
+              <CabecalhoCartao
+                titulo="O que os números estão dizendo"
+                descricao="Leitura dos últimos 28 dias, atualizada a cada registro."
+                acao={
+                  <Link to="/desempenho">
+                    <Botao tamanho="p" aparencia="fantasma">
+                      Ver tudo <ArrowRight size={14} />
+                    </Botao>
+                  </Link>
+                }
+              />
+              <div className="grid gap-3 px-5 pb-5 md:grid-cols-2">
+                {painel.diagnosticos.slice(0, 2).map((d) => {
+                  const c = CORES_GRAVIDADE[d.gravidade]
+                  return (
+                    <div
+                      key={d.id}
+                      className="rounded-[12px] border p-4"
+                      style={{ background: c.fundo, borderColor: `color-mix(in oklab, ${c.borda} 35%, transparent)` }}
+                    >
+                      <p className="text-[0.875rem] leading-snug font-semibold" style={{ color: c.texto }}>
+                        {d.titulo}
+                      </p>
+                      <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-tinta-2">{d.detalhe}</p>
+                      <p className="mt-2.5 text-[0.8125rem] font-medium text-tinta">→ {d.acao}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            </Cartao>
+          )}
         </div>
       </div>
 
-      {/* ----------------------------- diagnóstico ----------------------------- */}
-      {painel.diagnosticos.length > 0 && (
-        <Cartao>
-          <CabecalhoCartao
-            titulo="O que os números estão dizendo"
-            descricao="Leitura dos últimos 28 dias, atualizada a cada registro."
-            acao={
-              <Link to="/desempenho">
-                <Botao tamanho="p" aparencia="fantasma">
-                  Ver tudo <ArrowRight size={14} />
-                </Botao>
-              </Link>
-            }
-          />
-          <div className="grid gap-3 px-5 pb-5 md:grid-cols-2">
-            {painel.diagnosticos.slice(0, 2).map((d) => {
-              const c = CORES_GRAVIDADE[d.gravidade]
-              return (
-                <div
-                  key={d.id}
-                  className="rounded-[12px] border p-4"
-                  style={{ background: c.fundo, borderColor: `color-mix(in oklab, ${c.borda} 35%, transparent)` }}
-                >
-                  <p className="text-[0.875rem] leading-snug font-semibold" style={{ color: c.texto }}>
-                    {d.titulo}
-                  </p>
-                  <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-tinta-2">{d.detalhe}</p>
-                  <p className="mt-2.5 text-[0.8125rem] font-medium text-tinta">→ {d.acao}</p>
-                </div>
-              )
-            })}
-          </div>
-        </Cartao>
-      )}
 
       {/* --------------------------- tarefas + agenda --------------------------- */}
-      <div className="grid gap-5 md:grid-cols-2">
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         <Cartao className="flex flex-col">
           <CabecalhoCartao
             titulo="A fazer"
@@ -362,28 +363,8 @@ export function Hoje() {
             )}
           </div>
         </Cartao>
-      </div>
 
-      {/* ---------------------------- últimos 14 dias ---------------------------- */}
-      <Cartao>
-        <CabecalhoCartao
-          titulo="Últimos 14 dias"
-          descricao="A coluna inteira é o tempo do dia; a parte de baixo é a que rende."
-          acao={<Legenda itens={[{ cor: 'var(--serie-ativo)', nome: 'Ativo' }, { cor: 'var(--serie-passivo)', nome: 'Passivo' }]} />}
-        />
-        <div className="px-4 pb-5 md:px-5">
-          {dados.sessoes.length === 0 ? (
-            <SemDados>
-              Ainda não há nada para desenhar. Registre a primeira sessão de estudo e o gráfico começa a
-              existir a partir de hoje.
-            </SemDados>
-          ) : (
-            <ColunasDiarias pontos={painel.pontos} meta={meta} />
-          )}
-        </div>
-      </Cartao>
-
-      {/* ---------------------------- sessões de hoje ---------------------------- */}
+        {/* o que já foi feito fecha a faixa do dia */}
       {painel.sessoesHoje.length > 0 && (
         <Cartao>
           <CabecalhoCartao titulo="O que você fez hoje" descricao={`${duracao(painel.minutos)} em ${painel.sessoesHoje.length} sessões`} />
@@ -415,6 +396,27 @@ export function Hoje() {
           </ul>
         </Cartao>
       )}
+      </div>
+
+      {/* ---------------------------- últimos 14 dias ---------------------------- */}
+      <Cartao>
+        <CabecalhoCartao
+          titulo="Últimos 14 dias"
+          descricao="A coluna inteira é o tempo do dia; a parte de baixo é a que rende."
+          acao={<Legenda itens={[{ cor: 'var(--serie-ativo)', nome: 'Ativo' }, { cor: 'var(--serie-passivo)', nome: 'Passivo' }]} />}
+        />
+        <div className="px-4 pb-5 md:px-5">
+          {dados.sessoes.length === 0 ? (
+            <SemDados>
+              Ainda não há nada para desenhar. Registre a primeira sessão de estudo e o gráfico começa a
+              existir a partir de hoje.
+            </SemDados>
+          ) : (
+            <ColunasDiarias pontos={painel.pontos} meta={meta} />
+          )}
+        </div>
+      </Cartao>
+
 
       <DialogoSessao aberto={abrirSessao} aoFechar={() => setAbrirSessao(false)} />
       <DialogoQuestao aberto={abrirQuestao} aoFechar={() => setAbrirQuestao(false)} />

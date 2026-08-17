@@ -92,7 +92,7 @@ function PilulaCronometro() {
   return (
     <NavLink
       to="/estudar"
-      className="fixed right-4 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 inline-flex items-center gap-2 rounded-full border border-latao/40 bg-superficie px-3.5 py-2 shadow-alto md:bottom-6"
+      className="fixed right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-30 inline-flex items-center gap-2 rounded-full border border-latao/40 bg-superficie px-3.5 py-2 shadow-alto md:bottom-6"
     >
       <span className="h-2 w-2 rounded-full bg-latao" style={{ animation: 'pulso-brando 2s ease-in-out infinite' }} />
       <span className="num text-[0.8125rem] font-medium text-tinta">{relogio(segundos)}</span>
@@ -172,14 +172,17 @@ export function Casca({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="pb-[calc(4.75rem+env(safe-area-inset-bottom))] md:pb-10 md:pl-[228px]">
+      <main className="pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-10 md:pl-[228px]">
         <div className="mx-auto w-full max-w-[1120px] px-4 py-5 md:px-8 md:py-8">{children}</div>
       </main>
 
       <PilulaCronometro />
 
       {/* ---------------- navegação inferior (celular) ---------------- */}
-      <nav className="area-segura-baixo fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-borda bg-superficie/95 backdrop-blur-md md:hidden">
+      <nav
+        className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-borda bg-superficie/95 backdrop-blur-md md:hidden"
+        style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.5rem)' }}
+      >
         {NAVEGACAO.map(({ para, nome, Icone }) => (
           <NavLink
             key={para}
@@ -187,7 +190,7 @@ export function Casca({ children }: { children: ReactNode }) {
             end={para === '/'}
             className={({ isActive }) =>
               cn(
-                'flex flex-col items-center gap-1 px-1 pt-2.5 pb-2 text-[0.625rem] font-medium transition-colors',
+                'flex min-h-[3.25rem] flex-col items-center justify-center gap-1 px-1 pt-2 text-[0.6875rem] font-medium transition-colors',
                 isActive ? 'text-tinta' : 'text-tinta-3',
               )
             }
@@ -195,7 +198,7 @@ export function Casca({ children }: { children: ReactNode }) {
             {({ isActive }) => (
               <>
                 <span className="relative">
-                  <Icone size={20} strokeWidth={isActive ? 2.2 : 1.7} />
+                  <Icone size={22} strokeWidth={isActive ? 2.2 : 1.7} />
                   {isActive && (
                     <span
                       className="absolute -top-2.5 left-1/2 h-[3px] w-[3px] -translate-x-1/2 rounded-full bg-latao"

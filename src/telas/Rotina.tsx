@@ -23,6 +23,65 @@ import type { Aula, Prioridade, Tarefa } from '@/lib/tipos'
 
 const DIAS_UTEIS = [1, 2, 3, 4, 5, 6, 0]
 
+interface AulaPosicionada {
+  aula: Aula
+  coluna: number
+  colunas: number
+}
+
+/**
+ * Reparte a largura do dia entre aulas que se cruzam no horário.
+ *
+ * Sem isso, duas aulas no mesmo horário eram desenhadas uma exatamente por cima
+ * da outra e a de baixo sumia. As aulas são agrupadas em blocos que se tocam, e
+ * dentro de cada bloco cada aula ocupa a primeira coluna que já estiver livre —
+ * então duas aulas simultâneas ficam lado a lado, e uma aula sozinha continua
+ * ocupando o dia inteiro.
+ */
+function distribuirColunas(aulas: Aula[]): AulaPosicionada[] {
+  const ordenadas = [...aulas].sort(
+    (a, b) =>
+      horaParaMinutos(a.inicio) - horaParaMinutos(b.inicio) ||
+      horaParaMinutos(a.fim) - horaParaMinutos(b.fim),
+  )
+
+  const saida: AulaPosicionada[] = []
+  let grupo: AulaPosicionada[] = []
+  let fimDasColunas: number[] = []
+  let fimDoGrupo = -1
+
+  const fecharGrupo = () => {
+    const largura = Math.max(1, fimDasColunas.length)
+    for (const item of grupo) item.colunas = largura
+    saida.push(...grupo)
+    grupo = []
+    fimDasColunas = []
+    fimDoGrupo = -1
+  }
+
+  for (const aula of ordenadas) {
+    const ini = horaParaMinutos(aula.inicio)
+    const fim = horaParaMinutos(aula.fim)
+
+    // Começou depois de tudo que veio antes: bloco novo, largura recomeça.
+    if (grupo.length && ini >= fimDoGrupo) fecharGrupo()
+
+    let coluna = fimDasColunas.findIndex((f) => f <= ini)
+    if (coluna === -1) {
+      coluna = fimDasColunas.length
+      fimDasColunas.push(fim)
+    } else {
+      fimDasColunas[coluna] = fim
+    }
+
+    grupo.push({ aula, coluna, colunas: 1 })
+    fimDoGrupo = Math.max(fimDoGrupo, fim)
+  }
+  if (grupo.length) fecharGrupo()
+
+  return saida
+}
+
 // ============================================================ diálogo aula ==
 
 function DialogoAula({
@@ -271,20 +330,24 @@ function Grade() {
                         />
                       ))}
 
-                      {(porDia.get(d) ?? []).map((a) => {
+                      {distribuirColunas(porDia.get(d) ?? []).map(({ aula: a, coluna, colunas }) => {
                         const ini = horaParaMinutos(a.inicio)
                         const fim = horaParaMinutos(a.fim)
                         const materia = materiaPorId(a.materia_id)
                         const cor = materia?.cor ?? 'var(--acento)'
+                        const largura = 100 / colunas
                         return (
                           <button
                             key={a.id}
                             type="button"
                             onClick={() => setEditando(a)}
-                            className="absolute inset-x-1 overflow-hidden rounded-[8px] border-l-[3px] px-2 py-1.5 text-left transition-shadow hover:shadow-medio"
+                            title={colunas > 1 ? `${a.titulo} · ${a.inicio}–${a.fim}` : undefined}
+                            className="absolute overflow-hidden rounded-[8px] border-l-[3px] px-2 py-1.5 text-left transition-shadow hover:z-10 hover:shadow-medio"
                             style={{
                               top: `${((ini - limites.min) / span) * 100}%`,
                               height: `${((fim - ini) / span) * 100}%`,
+                              left: `calc(${coluna * largura}% + 3px)`,
+                              width: `calc(${largura}% - 6px)`,
                               borderLeftColor: cor,
                               background: `color-mix(in oklab, ${cor} 14%, var(--superficie))`,
                             }}
