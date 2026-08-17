@@ -26,7 +26,7 @@ dados ficam salvos no navegador e as nove matérias já vêm cadastradas.
 O app pede usuário e senha ao abrir — a trava fica em `src/lib/acesso.ts`, é
 conferida no próprio navegador e sai de cena quando entrar login de verdade.
 
-Para publicar, veja [LOVABLE.md](LOVABLE.md).
+Para publicar, veja [SINCRONIZAR.md](SINCRONIZAR.md).
 
 ---
 
@@ -70,8 +70,8 @@ No próprio navegador (`localStorage`), sem servidor e sem conta.
 
 Isso significa que **o computador e o celular têm históricos separados**. Para
 juntar: *Ajustes → Seus dados → Baixar uma cópia*, e restaurar no outro aparelho.
-Para sincronizar de verdade, [LOVABLE.md](LOVABLE.md) explica como ligar o
-Lovable Cloud.
+Para sincronizar de verdade, [SINCRONIZAR.md](SINCRONIZAR.md) explica como ligar
+o banco na nuvem.
 
 Limpar os dados de navegação apaga o histórico. Baixe uma cópia de vez em quando.
 
@@ -81,7 +81,6 @@ Limpar os dados de navegação apaga o histórico. Baixe uma cópia de vez em qu
 
 Funciona em qualquer hospedagem estática, de graça:
 
-- **Lovable** — importa do GitHub e roda; veja [LOVABLE.md](LOVABLE.md)
 - **Vercel / Netlify / Cloudflare Pages** — importe o repositório e aceite os
   padrões (`npm run build`, pasta `dist`). O `vercel.json` já cuida das rotas.
 
