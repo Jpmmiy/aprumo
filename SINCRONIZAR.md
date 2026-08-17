@@ -15,8 +15,14 @@ A integração dele funciona só no sentido contrário: um projeto criado dentro
 Lovable pode ser exportado para o GitHub, e a partir daí sincroniza nos dois
 sentidos. Um projeto que nasceu fora, como este, não tem como entrar.
 
-Ou seja: o Lovable Cloud não é uma opção para este código. Levar o Aprumo para
-lá significaria mandar o Lovable construir um app do zero e jogar este fora.
+Ou seja: o Lovable Cloud não é uma opção para este código. A única forma de ter
+o Aprumo dentro do Lovable é pedir que ele reconstrua a partir de uma
+especificação — está pronta em [PROMPT-LOVABLE.md](PROMPT-LOVABLE.md).
+
+Só saiba o que está trocando: sai um app testado, com paletas validadas para
+daltonismo e o motor de diagnóstico afinado, e entra o que outra IA construir
+lendo a descrição. O caminho abaixo mantém o app como está e resolve a
+sincronização.
 
 ## O caminho que funciona: Supabase
 
