@@ -10,7 +10,7 @@ import { Botao, CabecalhoCartao, Cartao, Etiqueta, Vazio, cn } from '@/component
 import { agoraEmMinutos, diaDaSemana, formatarCompleto, hoje, horaParaMinutos, ultimosDias } from '@/lib/datas'
 import { duracao, numero, porcento, primeiroNome, saudacao, taxa } from '@/lib/formato'
 import { diaDaSessao, diagnosticar, sequencia, serieDiaria, sessoesNoIntervalo, somaMinutos } from '@/lib/metricas'
-import { nomeDaAtividade } from '@/lib/constantes'
+import { ROTULO_SEM_MATERIA, nomeDaAtividade } from '@/lib/constantes'
 import { TelaCarregando } from '@/componentes/Casca'
 
 const CORES_GRAVIDADE = {
@@ -84,7 +84,7 @@ export function Hoje() {
   const taxaHoje = taxa(painel.acertosQ, painel.totalQ)
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pilha-entrada">
       {/* ------------------------------- cabeçalho ------------------------------- */}
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
@@ -346,7 +346,7 @@ export function Hoje() {
                       </span>
                       <span
                         className="h-8 w-[3px] shrink-0 rounded-full"
-                        style={{ background: materia?.cor ?? 'var(--borda-forte)' }}
+                        style={{ background: materia?.cor ?? 'var(--tinta-3)' }}
                       />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-[0.875rem] text-tinta">
@@ -394,11 +394,11 @@ export function Hoje() {
                 <li key={s.id} className="flex items-center gap-3 px-5 py-3">
                   <span
                     className="h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{ background: materia?.cor ?? 'var(--borda-forte)' }}
+                    style={{ background: materia?.cor ?? 'var(--tinta-3)' }}
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-[0.875rem] text-tinta">
-                      {materia?.nome ?? 'Matéria removida'}
+                      {materia?.nome ?? ROTULO_SEM_MATERIA}
                       {s.assunto && <span className="text-tinta-3"> · {s.assunto}</span>}
                     </span>
                     <span className="text-xs text-tinta-3">{nomeDaAtividade(s.atividade)}</span>

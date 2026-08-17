@@ -239,7 +239,7 @@ export function Ajustes() {
     dados.sessoes.filter((s) => s.materia_id === id).length + dados.questoes.filter((q) => q.materia_id === id).length
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pilha-entrada">
       <header>
         <h1 className="display text-[1.75rem] leading-tight text-tinta md:text-[2rem]">Ajustes</h1>
         <p className="mt-1.5 text-[0.875rem] text-tinta-3">

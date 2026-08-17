@@ -27,6 +27,14 @@ export const ATIVIDADES: Atividade[] = [
 
 export const MAPA_ATIVIDADES = new Map(ATIVIDADES.map((a) => [a.id, a]))
 
+/**
+ * Sessão sem matéria: o bloco corrido do cursinho, que passa por várias
+ * matérias e não vale a pena separar. Conta no tempo total e na constância,
+ * mas fica de fora dos gráficos por matéria — onde ele só faria barulho.
+ */
+export const ROTULO_SEM_MATERIA = 'Cursinho'
+export const OPCAO_SEM_MATERIA = 'Cursinho (sem separar matéria)'
+
 export function tipoDaAtividade(id: string): TipoEstudo {
   return MAPA_ATIVIDADES.get(id)?.tipo ?? 'passivo'
 }

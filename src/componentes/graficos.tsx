@@ -166,10 +166,12 @@ export function ColunasDiarias({
                     <rect x={i * passo} y={-6} width={passo} height={a + 6} fill="var(--superficie-2)" rx="5" />
                   )}
                   <path
+                    className="barra-entrada"
                     d={caminhoBarra(x, yAtivo, larguraBarra, hAtivo, 4, !temPassivo)}
                     fill="var(--serie-ativo)"
                   />
                   <path
+                    className="barra-entrada"
                     d={caminhoBarra(x, yPassivo, larguraBarra, hPassivo, 4, true)}
                     fill="var(--serie-passivo)"
                   />

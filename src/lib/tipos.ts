@@ -16,7 +16,8 @@ export interface Materia {
 
 export interface Sessao {
   id: string
-  materia_id: string
+  /** null = estudo bruto do cursinho, sem separar por matéria. */
+  materia_id: string | null
   /** ISO completo: guarda o instante de início para reconstruir o dia local. */
   inicio: string
   minutos: number

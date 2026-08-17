@@ -150,7 +150,7 @@ export function Anotacoes() {
   }, [dados.anotacoes, busca, filtro])
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pilha-entrada">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="display text-[1.75rem] leading-tight text-tinta md:text-[2rem]">Anotações</h1>

@@ -92,7 +92,7 @@ function VisaoGeral() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pilha-entrada">
       <div className="flex justify-end">
         <Abas valor={dias} aoTrocar={setDias} opcoes={PERIODOS as unknown as { id: typeof dias; nome: string }[]} />
       </div>

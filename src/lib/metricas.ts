@@ -56,6 +56,9 @@ export function porMateria(
 ): LinhaMateria[] {
   const ultimoEstudo = new Map<string, string>()
   for (const s of todasAsSessoes) {
+    // Sessão de cursinho corrido não tem matéria: entra no total, mas não
+    // conta como "estudei essa matéria hoje".
+    if (!s.materia_id) continue
     const d = diaDaSessao(s)
     const atual = ultimoEstudo.get(s.materia_id)
     if (!atual || d > atual) ultimoEstudo.set(s.materia_id, d)

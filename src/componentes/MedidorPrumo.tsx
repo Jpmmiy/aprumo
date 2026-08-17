@@ -107,7 +107,9 @@ export function MedidorPrumo({ feito, meta }: { feito: number; meta: number }) {
           )
         })}
 
-        {/* o fio e o peso, girando em torno da âncora */}
+        {/* Duas camadas de giro em torno da mesma âncora: a de fora é a leitura
+            (vai até o ângulo do dia e fica lá), a de dentro é a inércia do peso,
+            que nunca para. Separadas porque uma responde ao dado e a outra não. */}
         <g
           style={{
             transform: `rotate(${angulo}deg)`,
@@ -116,6 +118,10 @@ export function MedidorPrumo({ feito, meta }: { feito: number; meta: number }) {
             transition: 'transform 1100ms cubic-bezier(0.34, 1.4, 0.5, 1)',
           }}
         >
+          <g
+            className="prumo-vivo"
+            style={{ transformOrigin: `${ANCORA_X}px ${ANCORA_Y}px`, transformBox: 'view-box' }}
+          >
           <line
             x1={ANCORA_X}
             y1={ANCORA_Y}
@@ -142,6 +148,7 @@ export function MedidorPrumo({ feito, meta }: { feito: number; meta: number }) {
             fill="var(--superficie)"
             opacity="0.3"
           />
+          </g>
         </g>
 
         {/* âncora por cima, para o fio nascer atrás dela */}

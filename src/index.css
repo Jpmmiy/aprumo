@@ -317,21 +317,27 @@
 }
 
 /* --- Movimento: só onde ele significa alguma coisa --- */
-@keyframes prumo-assentar {
-  0% {
-    transform: rotate(var(--angulo-inicial, 0deg));
-  }
-  35% {
-    transform: rotate(calc(var(--angulo) * 1.18));
-  }
-  62% {
-    transform: rotate(calc(var(--angulo) * 0.9));
-  }
-  84% {
-    transform: rotate(calc(var(--angulo) * 1.03));
-  }
+
+/* O prumo nunca para completamente: um peso pendurado oscila sempre um pouco.
+   A amplitude é pequena de propósito — é sinal de que o instrumento está vivo,
+   não um efeito. O giro da leitura fica na camada de fora; esta é só a inércia. */
+@keyframes prumo-balanco {
+  0%,
   100% {
-    transform: rotate(var(--angulo));
+    transform: rotate(-1.15deg);
+  }
+  50% {
+    transform: rotate(1.15deg);
+  }
+}
+
+/* Barra de gráfico nascendo da linha de base. */
+@keyframes crescer {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
   }
 }
 
@@ -358,6 +364,41 @@
 
 .animar-surgir {
   animation: surgir 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Os cartões de uma tela entram em cascata curta, de cima para baixo. Passado o
+   sexto, todos entram juntos: escalonar demais faz a página parecer lenta. */
+.pilha-entrada > * {
+  animation: surgir 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.pilha-entrada > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.pilha-entrada > *:nth-child(2) {
+  animation-delay: 45ms;
+}
+.pilha-entrada > *:nth-child(3) {
+  animation-delay: 90ms;
+}
+.pilha-entrada > *:nth-child(4) {
+  animation-delay: 130ms;
+}
+.pilha-entrada > *:nth-child(5) {
+  animation-delay: 165ms;
+}
+.pilha-entrada > *:nth-child(n + 6) {
+  animation-delay: 195ms;
+}
+
+.barra-entrada {
+  transform-origin: bottom;
+  animation: crescer 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Um prumo parado é um prumo quebrado — mas não no papel, nem para quem pediu
+   menos movimento. */
+.prumo-vivo {
+  animation: prumo-balanco 3.6s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

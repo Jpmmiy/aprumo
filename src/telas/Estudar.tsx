@@ -4,7 +4,7 @@ import { useCronometro } from '@/dados/cronometro'
 import { useDados } from '@/dados/loja'
 import { DialogoSessao } from '@/componentes/dialogos'
 import { Botao, BotaoIcone, CabecalhoCartao, Cartao, ConfirmarExclusao, Etiqueta, Selecao, Vazio, cn } from '@/componentes/ui'
-import { ATIVIDADES, nomeDaAtividade, tipoDaAtividade } from '@/lib/constantes'
+import { ATIVIDADES, OPCAO_SEM_MATERIA, ROTULO_SEM_MATERIA, nomeDaAtividade, tipoDaAtividade } from '@/lib/constantes'
 import { formatarMedio, hoje, inicioDaSemana } from '@/lib/datas'
 import { duracao, relogio } from '@/lib/formato'
 import { diaDaSessao, somaMinutos } from '@/lib/metricas'
@@ -25,7 +25,7 @@ export function Estudar() {
   const [periodo, setPeriodo] = useState<'semana' | 'mes' | 'tudo'>('semana')
 
   const ativas = dados.materias.filter((m) => !m.arquivada)
-  const materiaAtual = crono.estado.materiaId ?? ativas[0]?.id ?? ''
+  const materiaAtual = crono.estado.materiaId ?? ''
   const tipo = tipoDaAtividade(crono.estado.atividade)
 
   const historico = useMemo(() => {
@@ -49,7 +49,7 @@ export function Estudar() {
     crono.pausar()
     const minutos = Math.max(1, Math.round(crono.segundos / 60))
     setRegistro({
-      materia_id: materiaAtual,
+      materia_id: materiaAtual || null,
       atividade: crono.estado.atividade,
       minutos,
       assunto: crono.estado.assunto || null,
@@ -58,7 +58,7 @@ export function Estudar() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pilha-entrada">
       <header>
         <h1 className="display text-[1.75rem] leading-tight text-tinta md:text-[2rem]">Estudar</h1>
         <p className="mt-1.5 text-[0.875rem] text-tinta-3">
@@ -110,7 +110,7 @@ export function Estudar() {
                   <Pause size={17} /> Pausar
                 </Botao>
               ) : (
-                <Botao aparencia="solido" tamanho="g" onClick={crono.iniciar} disabled={!ativas.length}>
+                <Botao aparencia="solido" tamanho="g" onClick={crono.iniciar}>
                   <Play size={17} /> {crono.ativo ? 'Retomar' : 'Começar'}
                 </Botao>
               )}
@@ -127,11 +127,6 @@ export function Estudar() {
             {crono.segundos < 30 && crono.ativo && (
               <p className="mt-3 text-xs text-tinta-3">Menos de 30 segundos não vira registro.</p>
             )}
-            {!ativas.length && (
-              <p className="mt-3 text-[0.8125rem] text-ferrugem">
-                Cadastre pelo menos uma matéria em Ajustes para começar.
-              </p>
-            )}
           </div>
 
           <div className="space-y-3.5 rounded-[12px] border border-borda bg-superficie-2 p-4">
@@ -140,7 +135,7 @@ export function Estudar() {
               value={materiaAtual}
               onChange={(e) => crono.definir({ materiaId: e.target.value })}
             >
-              {!ativas.length && <option value="">Nenhuma matéria</option>}
+              <option value="">{OPCAO_SEM_MATERIA}</option>
               {ativas.map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.nome}
@@ -268,11 +263,11 @@ export function Estudar() {
                       <li key={s.id} className="group flex items-center gap-3 px-5 py-3">
                         <span
                           className="h-8 w-[3px] shrink-0 rounded-full"
-                          style={{ background: materia?.cor ?? 'var(--borda-forte)' }}
+                          style={{ background: materia?.cor ?? 'var(--tinta-3)' }}
                         />
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-[0.875rem] text-tinta">
-                            {materia?.nome ?? 'Matéria removida'}
+                            {materia?.nome ?? ROTULO_SEM_MATERIA}
                             {s.assunto && <span className="text-tinta-3"> · {s.assunto}</span>}
                           </p>
                           <div className="mt-1 flex flex-wrap items-center gap-1.5">
@@ -322,7 +317,7 @@ export function Estudar() {
         aoConfirmar={() => apagando && void remover('sessoes', apagando.id)}
         oQue={
           apagando
-            ? `A sessão de ${duracao(apagando.minutos)} em ${materiaPorId(apagando.materia_id)?.nome ?? 'matéria removida'}`
+            ? `A sessão de ${duracao(apagando.minutos)} em ${materiaPorId(apagando.materia_id)?.nome ?? ROTULO_SEM_MATERIA}`
             : ''
         }
       />

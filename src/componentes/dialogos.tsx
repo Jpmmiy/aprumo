@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ATIVIDADES, BANCAS, COMPETENCIAS_ENEM, tipoDaAtividade } from '@/lib/constantes'
+import { ATIVIDADES, BANCAS, COMPETENCIAS_ENEM, OPCAO_SEM_MATERIA, tipoDaAtividade } from '@/lib/constantes'
 import { hoje } from '@/lib/datas'
 import { duracao } from '@/lib/formato'
 import type { Banca, Questao, Redacao, Sessao } from '@/lib/tipos'
@@ -55,7 +55,7 @@ export function DialogoSessao({
   useEffect(() => {
     if (!aberto) return
     const partes = inicial?.inicio ? partesDoInicio(inicial.inicio) : { data: hoje(), hora: agoraHora() }
-    setMateriaId(inicial?.materia_id ?? ativas[0]?.id ?? '')
+    setMateriaId(inicial?.materia_id ?? '')
     setAtividade(inicial?.atividade ?? 'exercicios')
     setMinutos(String(inicial?.minutos ?? 60))
     setData(partes.data)
@@ -72,7 +72,6 @@ export function DialogoSessao({
 
   async function confirmar() {
     setErro(null)
-    if (!materiaId) return setErro('Escolha a matéria.')
     if (!Number.isFinite(min) || min <= 0) return setErro('Diga quantos minutos você estudou.')
     if (min > 1440) return setErro('Um registro cobre no máximo 24 horas.')
 
@@ -80,7 +79,7 @@ export function DialogoSessao({
     try {
       await salvar('sessoes', {
         ...(inicial?.id ? { id: inicial.id } : {}),
-        materia_id: materiaId,
+        materia_id: materiaId || null,
         atividade,
         tipo,
         minutos: Math.round(min),
@@ -115,8 +114,13 @@ export function DialogoSessao({
       }
     >
       <div className="space-y-4">
-        <Selecao rotulo="Matéria" value={materiaId} onChange={(e) => setMateriaId(e.target.value)}>
-          {!ativas.length && <option value="">Nenhuma matéria cadastrada</option>}
+        <Selecao
+          rotulo="Matéria"
+          value={materiaId}
+          onChange={(e) => setMateriaId(e.target.value)}
+          dica={materiaId ? undefined : 'Entra no tempo total, mas fica fora dos gráficos por matéria.'}
+        >
+          <option value="">{OPCAO_SEM_MATERIA}</option>
           {ativas.map((m) => (
             <option key={m.id} value={m.id}>
               {m.nome}
