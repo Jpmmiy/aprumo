@@ -8,17 +8,26 @@ export function Entrada({ aoLiberar }: { aoLiberar: () => void }) {
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState<string | null>(null)
   const [tremendo, setTremendo] = useState(false)
+  const [conferindo, setConferindo] = useState(false)
 
-  function enviar(e: FormEvent) {
+  async function enviar(e: FormEvent) {
     e.preventDefault()
-    if (confere(usuario, senha)) {
-      liberar()
-      aoLiberar()
-      return
+    if (conferindo) return
+    setConferindo(true)
+    try {
+      // A derivação leva uns 200ms de propósito — é o que torna caro tentar
+      // senha atrás de senha.
+      if (await confere(usuario, senha)) {
+        liberar()
+        aoLiberar()
+        return
+      }
+      setErro('Usuário ou senha incorretos.')
+      setTremendo(true)
+      setTimeout(() => setTremendo(false), 420)
+    } finally {
+      setConferindo(false)
     }
-    setErro('Usuário ou senha incorretos.')
-    setTremendo(true)
-    setTimeout(() => setTremendo(false), 420)
   }
 
   return (
@@ -82,6 +91,7 @@ export function Entrada({ aoLiberar }: { aoLiberar: () => void }) {
           <form onSubmit={enviar} className="mt-8 space-y-4">
             <Campo
               rotulo="Usuário"
+              disabled={conferindo}
               value={usuario}
               onChange={(e) => {
                 setUsuario(e.target.value)
@@ -111,8 +121,8 @@ export function Entrada({ aoLiberar }: { aoLiberar: () => void }) {
               </p>
             )}
 
-            <Botao type="submit" aparencia="solido" tamanho="g" className="w-full">
-              Entrar
+            <Botao type="submit" aparencia="solido" tamanho="g" className="w-full" disabled={conferindo}>
+              {conferindo ? 'Conferindo…' : 'Entrar'}
             </Botao>
           </form>
 
