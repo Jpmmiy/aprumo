@@ -1,7 +1,10 @@
+import { useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { ProvedorDados } from '@/dados/loja'
 import { ProvedorCronometro } from '@/dados/cronometro'
 import { Casca } from '@/componentes/Casca'
+import { estaLiberado } from '@/lib/acesso'
+import { Entrada } from '@/telas/Entrada'
 import { Hoje } from '@/telas/Hoje'
 import { Estudar } from '@/telas/Estudar'
 import { Desempenho } from '@/telas/Desempenho'
@@ -10,10 +13,16 @@ import { Anotacoes } from '@/telas/Anotacoes'
 import { Ajustes } from '@/telas/Ajustes'
 
 /**
- * Sem login e sem tela de configuração: os dados ficam no próprio aparelho,
- * então o app abre já usável. Ver LOVABLE.md para ligar sincronização na nuvem.
+ * Os dados ficam no próprio aparelho e a entrada é conferida aqui mesmo, no
+ * navegador — o suficiente para o app não ficar aberto, e o que dá para fazer
+ * sem servidor. Ver LOVABLE.md para trocar por login e sincronização de
+ * verdade.
  */
 export function App() {
+  const [liberado, setLiberado] = useState(estaLiberado)
+
+  if (!liberado) return <Entrada aoLiberar={() => setLiberado(true)} />
+
   return (
     <ProvedorDados>
       <ProvedorCronometro>

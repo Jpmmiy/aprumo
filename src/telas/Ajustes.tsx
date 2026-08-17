@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
-import { Download, GripVertical, Pencil, Plus, Trash2, Upload } from 'lucide-react'
+import { Download, GripVertical, Lock, Pencil, Plus, Trash2, Upload } from 'lucide-react'
 import { useDados } from '@/dados/loja'
+import { trancar } from '@/lib/acesso'
 import {
   Alternador,
   Botao,
@@ -464,6 +465,24 @@ export function Ajustes() {
               {restauro.texto}
             </p>
           )}
+
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[10px] border border-borda px-4 py-3">
+            <div className="min-w-0">
+              <p className="text-[0.875rem] font-medium text-tinta">Trancar o app</p>
+              <p className="text-[0.8125rem] text-tinta-3">
+                Volta a pedir usuário e senha neste aparelho. Nada é apagado.
+              </p>
+            </div>
+            <Botao
+              tamanho="p"
+              onClick={() => {
+                trancar()
+                location.reload()
+              }}
+            >
+              <Lock size={14} /> Trancar
+            </Botao>
+          </div>
 
           <p className="px-1 text-xs leading-relaxed text-tinta-3">
             Como tudo mora neste navegador, limpar os dados de navegação apaga seu histórico de
